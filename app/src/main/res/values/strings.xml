@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TodoListApp</string>
+    <string name="titulo_tarefa">Titulo Tarefa</string>
+    <string name="salvar_tarefa">Salvar Tarefa</string>
+    <string name="lista_de_tarefas">Lista de Tarefas</string>
+    <string name="descricao">Descrição</string>
+    <string name="nivel_prioridade">Nível de prioridade</string>
+    <string name="salvar">Salvar</string>
+</resources>
