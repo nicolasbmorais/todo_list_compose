@@ -13,10 +13,10 @@ import com.nicolasmorais.todolistapp.ui.theme.Purple700
 import com.nicolasmorais.todolistapp.ui.theme.WHITE
 
 @Composable
-fun PrimaryButton(
-    onClick: () -> Unit,
-    modifier: Modifier,
+fun PrimaryButtonComponent(
     text: String,
+    modifier: Modifier,
+    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,

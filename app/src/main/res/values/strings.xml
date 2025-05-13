@@ -6,4 +6,10 @@
     <string name="descricao">Descrição</string>
     <string name="nivel_prioridade">Nível de prioridade</string>
     <string name="salvar">Salvar</string>
+    <string name="titulo_tarefa_obrigatorio">Título da tarefa é obrigatório</string>
+    <string name="sucesso_ao_salvar_tarefa">Sucesso ao salvar tarefa!</string>
+    <string name="sem_prioridade">Sem prioridade</string>
+    <string name="prioridade_baixa">Prioridade Baixa</string>
+    <string name="prioridade_media">Prioridade Média</string>
+    <string name="prioridade_alta">Prioridade Alta</string>
 </resources>

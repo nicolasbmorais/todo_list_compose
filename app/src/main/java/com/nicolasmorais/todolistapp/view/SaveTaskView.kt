@@ -1,6 +1,5 @@
 package com.nicolasmorais.todolistapp.view
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,11 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,12 +28,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nicolasmorais.todolistapp.R
-import com.nicolasmorais.todolistapp.components.CustomTextField
-import com.nicolasmorais.todolistapp.components.PrimaryButton
-import com.nicolasmorais.todolistapp.consts.Contants
-import com.nicolasmorais.todolistapp.repositories.TasksRepository
+import com.nicolasmorais.todolistapp.components.CustomTextFieldComponent
+import com.nicolasmorais.todolistapp.components.PrimaryButtonComponent
+import com.nicolasmorais.todolistapp.enums.Priority
 import com.nicolasmorais.todolistapp.ui.theme.Purple700
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_GREEN_DISABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_GREEN_ENABLED
@@ -50,14 +45,14 @@ import com.nicolasmorais.todolistapp.ui.theme.WHITE
 import com.nicolasmorais.todolistapp.viewmodel.TasksViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SaveTask(navController: NavController, task: TasksViewModel = TasksViewModel()) {
+fun SaveTask(navController: NavController, tasksViewModel: TasksViewModel = viewModel()) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val tasksRepository = TasksRepository()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,13 +72,6 @@ fun SaveTask(navController: NavController, task: TasksViewModel = TasksViewModel
         },
     ) { innerPadding ->
 
-        var taskTitle by remember { mutableStateOf("") }
-        var taskDescription by remember { mutableStateOf("") }
-        var noPriority by remember { mutableStateOf(false) }
-        var lowPriority by remember { mutableStateOf(false) }
-        var midPriority by remember { mutableStateOf(false) }
-        var highPriority by remember { mutableStateOf(false) }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -91,11 +79,11 @@ fun SaveTask(navController: NavController, task: TasksViewModel = TasksViewModel
                 .padding(innerPadding)
                 .padding(20.dp)
         ) {
-            CustomTextField(
-                value = taskTitle,
+            CustomTextFieldComponent(
+                value = tasksViewModel.taskTitle,
                 label = stringResource(R.string.titulo_tarefa),
-                onValueChange = { value ->
-                    taskTitle = value
+                onValueChange = {
+                    tasksViewModel.onTitleChanged(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -103,12 +91,11 @@ fun SaveTask(navController: NavController, task: TasksViewModel = TasksViewModel
                 keyboardType = KeyboardType.Text
             )
             Spacer(Modifier.height(20.dp))
-            CustomTextField(
-                value = taskDescription,
+            CustomTextFieldComponent(
+                value = tasksViewModel.taskDescription,
                 label = stringResource(R.string.descricao),
-                onValueChange = { value ->
-                    taskDescription = value
-                    println(taskDescription)
+                onValueChange = {
+                    tasksViewModel.onDescriptionChanged(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,25 +110,25 @@ fun SaveTask(navController: NavController, task: TasksViewModel = TasksViewModel
             ) {
                 Text(stringResource(R.string.nivel_prioridade))
                 RadioButton(
-                    selected = lowPriority,
-                    onClick = { lowPriority = !lowPriority },
+                    selected = tasksViewModel.taskPriority == Priority.LOW,
+                    onClick =
+                    { tasksViewModel.setPriority(Priority.LOW) },
                     colors = RadioButtonDefaults.colors(
                         unselectedColor = RADIO_BUTTON_GREEN_DISABLED,
                         selectedColor = RADIO_BUTTON_GREEN_ENABLED,
-
-                        )
+                    )
                 )
                 RadioButton(
-                    selected = midPriority,
-                    onClick = { midPriority = !midPriority },
+                    selected = tasksViewModel.taskPriority == Priority.MEDIUM,
+                    onClick = { tasksViewModel.setPriority(Priority.MEDIUM) },
                     colors = RadioButtonDefaults.colors(
                         unselectedColor = RADIO_BUTTON_YELLOW_DISABLED,
                         selectedColor = RADIO_BUTTON_YELLOW_ENABLED,
                     )
                 )
                 RadioButton(
-                    selected = highPriority,
-                    onClick = { highPriority = !highPriority },
+                    selected = tasksViewModel.taskPriority == Priority.HIGH,
+                    onClick = { tasksViewModel.setPriority(Priority.HIGH) },
                     colors = RadioButtonDefaults.colors(
                         unselectedColor = RADIO_BUTTON_RED_DISABLED,
                         selectedColor = RADIO_BUTTON_RED_ENABLED,
@@ -151,44 +138,37 @@ fun SaveTask(navController: NavController, task: TasksViewModel = TasksViewModel
 
             }
             Spacer(Modifier.height(20.dp))
-            PrimaryButton(
-                onClick = {
-                    var message = false
-
-                    scope.launch(Dispatchers.IO) {
-                        if (taskTitle.isEmpty()) {
-                            message = false
-                        } else if (taskTitle.isNotEmpty() && taskDescription.isNotEmpty()) {
-                            tasksRepository.saveTask(
-                                taskTitle,
-                                taskDescription,
-                                Contants.LOW_PRIORITY
-                            )
-                            message = true
-                        }
-                    }
-
-                    scope.launch(Dispatchers.Main) {
-                        if (message) {
-                            Toast.makeText(
-                                context, "Sucesso ao salvar tarefa!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Título da tarefa é obrigatório",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-
-                },
+            PrimaryButtonComponent(
+                text = stringResource(R.string.salvar),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp),
-                text = stringResource(R.string.salvar)
-            )
+                onClick = {
+                    scope.launch {
+
+                        if (!tasksViewModel.isValid) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.titulo_tarefa_obrigatorio),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@launch
+                        }
+
+                        withContext(Dispatchers.IO) {
+                            tasksViewModel.saveTask()
+                        }
+
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.sucesso_ao_salvar_tarefa), Toast.LENGTH_SHORT
+                        ).show()
+
+                        navController.popBackStack()
+                    }
+                },
+
+                )
         }
     }
 }

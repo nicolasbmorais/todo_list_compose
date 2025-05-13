@@ -14,7 +14,7 @@ import com.nicolasmorais.todolistapp.ui.theme.WHITE
 
 
 @Composable
-fun CustomTextField(
+fun CustomTextFieldComponent(
     value: String,
     label: String,
     onValueChange: (String) -> Unit,

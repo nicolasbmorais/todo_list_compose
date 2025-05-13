@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,12 +22,13 @@ import com.nicolasmorais.todolistapp.ui.theme.WHITE
 import com.nicolasmorais.todolistapp.viewmodel.TasksViewModel
 
 @Composable
-fun TaskItem(
+fun TaskItemComponent(
     taskTitle: String,
     taskDescription: String,
     taskPriority: Int,
 ) {
     val taskViewModel: TasksViewModel = viewModel()
+    val context = LocalContext.current
 
     Card(
         colors = CardColors(
@@ -60,7 +62,7 @@ fun TaskItem(
                 })
 
             Text(
-                taskViewModel.priorityLevel(taskPriority),
+                taskViewModel.priorityLevel(taskPriority, context),
                 color = Color.Black,
                 modifier = Modifier.constrainAs(txtPriority) {
                     top.linkTo(txtDescription.bottom, margin = 10.dp)
