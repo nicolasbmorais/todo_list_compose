@@ -13,12 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.ktx.Firebase
+import com.google.android.gms.tasks.Task
 import com.nicolasmorais.todolistapp.R
 import com.nicolasmorais.todolistapp.components.TaskItem
 import com.nicolasmorais.todolistapp.ui.theme.BLACK
@@ -29,9 +30,9 @@ import com.nicolasmorais.todolistapp.viewmodel.TasksViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskList(navController: NavController) {
+fun TaskList(navController: NavController, taskViewModel: TasksViewModel = viewModel<TasksViewModel>()) {
 
-    val taskViewModel: TasksViewModel = viewModel()
+    val taskList by taskViewModel.taskList
 
     Scaffold(
         topBar = {
@@ -62,7 +63,7 @@ fun TaskList(navController: NavController) {
         }
     ) {
         LazyColumn {
-            itemsIndexed(taskViewModel.taskList) { _, task ->
+            itemsIndexed(taskList) { _, task ->
                 TaskItem(
                     taskTitle = task.task ?: "",
                     taskDescription = task.description ?: "",
