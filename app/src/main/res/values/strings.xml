@@ -12,4 +12,5 @@
     <string name="prioridade_baixa">Prioridade Baixa</string>
     <string name="prioridade_media">Prioridade Média</string>
     <string name="prioridade_alta">Prioridade Alta</string>
+    <string name="sucesso_ao_deletar_tarefa">Sucesso ao deletar tarefa!</string>
 </resources>

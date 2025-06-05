@@ -32,8 +32,6 @@ class DataSource {
     }
 
     fun getTaskList(): Flow<MutableList<TaskModel>> {
-
-
         db.collection("tasks").get().addOnCompleteListener { querySnapshot ->
             if (querySnapshot.isSuccessful) {
 
@@ -58,5 +56,8 @@ class DataSource {
         return allTasks
     }
 
-
+    fun deleteTask(task: String) {
+        db.collection("tasks").document(task).delete().addOnCompleteListener {}
+            .addOnFailureListener{}
+    }
 }

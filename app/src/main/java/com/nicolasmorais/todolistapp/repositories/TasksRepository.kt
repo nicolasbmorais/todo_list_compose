@@ -4,7 +4,7 @@ import com.nicolasmorais.todolistapp.data.DataSource
 import com.nicolasmorais.todolistapp.model.TaskModel
 import kotlinx.coroutines.flow.Flow
 
-class TasksRepository() {
+class TasksRepository {
     private val dataSource = DataSource()
 
     fun saveTask(task: TaskModel) {
@@ -13,5 +13,9 @@ class TasksRepository() {
 
     fun getTaskList(): Flow<MutableList<TaskModel>> {
         return dataSource.getTaskList()
+    }
+
+    fun deleteTask(task: String) {
+        dataSource.deleteTask(task)
     }
 }

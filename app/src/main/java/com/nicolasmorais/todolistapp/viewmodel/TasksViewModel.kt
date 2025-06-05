@@ -1,11 +1,13 @@
 package com.nicolasmorais.todolistapp.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.nicolasmorais.todolistapp.R
 import com.nicolasmorais.todolistapp.enums.Priority
 import com.nicolasmorais.todolistapp.model.TaskModel
@@ -13,12 +15,34 @@ import com.nicolasmorais.todolistapp.repositories.TasksRepository
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_GREEN_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_RED_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_YELLOW_ENABLED
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class TasksViewModel : ViewModel() {
+
     private val _repository = TasksRepository()
 
+    private val _taskList = MutableStateFlow<List<TaskModel>>(emptyList())
+    val taskList: StateFlow<List<TaskModel>> = _taskList
+
+
+    init {
+        viewModelScope.launch {
+            try {
+                _repository.getTaskList().collectLatest {
+                    _taskList.value = it
+                }
+            } catch (e: Exception) {
+                Log.e("TasksViewModel", "Error: ${e.message}")
+            }
+        }
+    }
+
+
+    var showDeleteDialog by mutableStateOf(false)
 
     var taskTitle by mutableStateOf("")
         private set
@@ -31,6 +55,22 @@ class TasksViewModel : ViewModel() {
 
     val isValid: Boolean
         get() = taskTitle.isNotBlank() && taskDescription.isNotBlank()
+
+
+    private fun fetchTasks() {
+        viewModelScope.launch {
+            _repository.getTaskList().collect {
+                _taskList.value = it
+            }
+        }
+    }
+
+    fun deleteTask(taskId: String) {
+        viewModelScope.launch {
+            _repository.deleteTask(taskId)
+            fetchTasks()
+        }
+    }
 
 
     fun onTitleChanged(value: String) {
@@ -46,10 +86,6 @@ class TasksViewModel : ViewModel() {
         taskPriority = if (taskPriority == priority) Priority.NO_PRIORITY else priority
     }
 
-
-    fun getAllTasks(): Flow<MutableList<TaskModel>> {
-        return _repository.getTaskList()
-    }
 
     fun saveTask() {
         _repository.saveTask(
@@ -79,4 +115,6 @@ class TasksViewModel : ViewModel() {
             else -> RADIO_BUTTON_RED_ENABLED
         }
     }
+
+
 }
