@@ -1,4 +1,4 @@
-package com.nicolasmorais.todolistapp.view
+package com.nicolasmorais.todolistapp.ui.view.home
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nicolasmorais.todolistapp.R
-import com.nicolasmorais.todolistapp.components.CustomTextFieldComponent
-import com.nicolasmorais.todolistapp.components.PrimaryButtonComponent
+import com.nicolasmorais.todolistapp.ui.components.CustomTextFieldComponent
+import com.nicolasmorais.todolistapp.ui.components.PrimaryButtonComponent
 import com.nicolasmorais.todolistapp.enums.Priority
 import com.nicolasmorais.todolistapp.ui.theme.Purple700
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_GREEN_DISABLED
@@ -42,14 +42,13 @@ import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_RED_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_YELLOW_DISABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_YELLOW_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.WHITE
-import com.nicolasmorais.todolistapp.viewmodel.TasksViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SaveTask(navController: NavController, tasksViewModel: TasksViewModel = viewModel()) {
+fun CreateTaskPage(navController: NavController, tasksViewModel: TasksViewModel = viewModel()) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 

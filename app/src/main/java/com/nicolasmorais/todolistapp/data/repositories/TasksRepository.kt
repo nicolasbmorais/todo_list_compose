@@ -1,7 +1,7 @@
-package com.nicolasmorais.todolistapp.repositories
+package com.nicolasmorais.todolistapp.data.repositories
 
-import com.nicolasmorais.todolistapp.data.DataSource
-import com.nicolasmorais.todolistapp.model.TaskModel
+import com.nicolasmorais.todolistapp.data.datasource.DataSource
+import com.nicolasmorais.todolistapp.data.model.TaskModel
 import kotlinx.coroutines.flow.Flow
 
 class TasksRepository {

@@ -1,4 +1,4 @@
-package com.nicolasmorais.todolistapp.view
+package com.nicolasmorais.todolistapp.ui.view.home
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,20 +22,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.nicolasmorais.todolistapp.Destinations
 import com.nicolasmorais.todolistapp.R
-import com.nicolasmorais.todolistapp.components.TaskItemComponent
+import com.nicolasmorais.todolistapp.ui.components.TaskItemComponent
 import com.nicolasmorais.todolistapp.ui.theme.BLACK
 import com.nicolasmorais.todolistapp.ui.theme.Purple700
 import com.nicolasmorais.todolistapp.ui.theme.WHITE
-import com.nicolasmorais.todolistapp.viewmodel.TasksViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskList(
+fun HomePage(
     navController: NavController,
-    taskViewModel: TasksViewModel = viewModel<TasksViewModel>()
+    taskViewModel: TasksViewModel = viewModel<TasksViewModel>(),
 ) {
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -55,7 +55,7 @@ fun TaskList(
         containerColor = BLACK,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("saveTask") },
+                onClick = { navController.navigate(Destinations.CREATE_TASK_ROUTE) },
                 containerColor = Purple700
             ) {
                 Icon(Icons.Filled.Add, "Floating action button.")
@@ -63,11 +63,13 @@ fun TaskList(
             }
         }
     ) { paddingValues ->
-        val taskList = taskViewModel.taskList.collectAsState().value
+        val taskList by taskViewModel.taskList.collectAsState()
 
-        LazyColumn(modifier = Modifier
-            .padding(paddingValues)
-            .padding(24.dp)) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(24.dp)
+        ) {
 
             itemsIndexed(taskList) { _, task ->
                 TaskItemComponent(

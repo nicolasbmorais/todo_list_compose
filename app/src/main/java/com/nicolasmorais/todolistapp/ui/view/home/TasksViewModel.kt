@@ -1,4 +1,4 @@
-package com.nicolasmorais.todolistapp.viewmodel
+package com.nicolasmorais.todolistapp.ui.view.home
 
 import android.content.Context
 import android.util.Log
@@ -10,13 +10,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nicolasmorais.todolistapp.R
 import com.nicolasmorais.todolistapp.enums.Priority
-import com.nicolasmorais.todolistapp.model.TaskModel
-import com.nicolasmorais.todolistapp.repositories.TasksRepository
+import com.nicolasmorais.todolistapp.data.model.TaskModel
+import com.nicolasmorais.todolistapp.data.repositories.TasksRepository
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_GREEN_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_RED_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_YELLOW_ENABLED
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -26,7 +26,7 @@ class TasksViewModel : ViewModel() {
     private val _repository = TasksRepository()
 
     private val _taskList = MutableStateFlow<List<TaskModel>>(emptyList())
-    val taskList: StateFlow<List<TaskModel>> = _taskList
+    val taskList = _taskList.asStateFlow()
 
 
     init {
@@ -68,7 +68,6 @@ class TasksViewModel : ViewModel() {
     fun deleteTask(taskId: String) {
         viewModelScope.launch {
             _repository.deleteTask(taskId)
-            fetchTasks()
         }
     }
 
@@ -88,13 +87,13 @@ class TasksViewModel : ViewModel() {
 
 
     fun saveTask() {
-        _repository.saveTask(
-            TaskModel(
-                title = taskTitle,
-                description = taskDescription,
-                priority = taskPriority.value
-            )
+        val task = TaskModel(
+            title = taskTitle, description = taskDescription, priority = taskPriority.value
         )
+
+        viewModelScope.launch {
+            _repository.saveTask(task)
+        }
     }
 
     fun priorityLevel(priority: Int, context: Context): String {

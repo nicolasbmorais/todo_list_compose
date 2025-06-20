@@ -1,4 +1,4 @@
-package com.nicolasmorais.todolistapp.components
+package com.nicolasmorais.todolistapp.ui.components
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nicolasmorais.todolistapp.R
 import com.nicolasmorais.todolistapp.ui.theme.ShapeCardPriority
 import com.nicolasmorais.todolistapp.ui.theme.WHITE
-import com.nicolasmorais.todolistapp.viewmodel.TasksViewModel
+import com.nicolasmorais.todolistapp.ui.view.home.TasksViewModel
 
 @Composable
 fun TaskItemComponent(

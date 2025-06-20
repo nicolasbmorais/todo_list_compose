@@ -1,4 +1,4 @@
-package com.nicolasmorais.todolistapp.components
+package com.nicolasmorais.todolistapp.ui.components
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField

@@ -1,4 +1,4 @@
-package com.nicolasmorais.todolistapp.model
+package com.nicolasmorais.todolistapp.data.model
 
 data class TaskModel(
     val title: String,
