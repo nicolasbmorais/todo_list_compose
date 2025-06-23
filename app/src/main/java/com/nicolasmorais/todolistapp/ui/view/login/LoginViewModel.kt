@@ -7,7 +7,9 @@ class LoginViewModel : ViewModel() {
 
     var email = MutableStateFlow("")
     var password = MutableStateFlow("")
+    var confirmPassword = MutableStateFlow("")
 
+    var isValidPassword = MutableStateFlow(false)
 
     fun setEmail(value: String) {
         email.value = value
@@ -18,7 +20,16 @@ class LoginViewModel : ViewModel() {
     }
 
     fun setConfirmPassword(value: String) {
-        password.value = value
+        confirmPassword.value = value
+        if (password.value == confirmPassword.value) {
+            isValidPassword.value = true
+        }
     }
 
+
+    fun registerUser() {
+        if (password.value == confirmPassword.value) {
+
+        }
+    }
 }

@@ -7,7 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nicolasmorais.todolistapp.ui.view.home.CreateTaskPage
 import com.nicolasmorais.todolistapp.ui.view.home.HomePage
 import com.nicolasmorais.todolistapp.ui.view.login.LoginPage
-import com.nicolasmorais.todolistapp.ui.view.onboarding.RegisterUser
+import com.nicolasmorais.todolistapp.ui.view.login.RegisterUser
 
 // Defina as rotas (strings únicas para identificar suas telas)
 object Destinations {
