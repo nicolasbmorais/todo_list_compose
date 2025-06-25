@@ -48,8 +48,7 @@ fun HomePage(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Purple700
-                )
-
+                ),
             )
         },
         containerColor = BLACK,
@@ -61,7 +60,7 @@ fun HomePage(
                 Icon(Icons.Filled.Add, "Floating action button.")
 
             }
-        }
+        },
     ) { paddingValues ->
         val taskList by taskViewModel.taskList.collectAsState()
 
@@ -79,8 +78,6 @@ fun HomePage(
                 )
             }
         }
-
-
     }
 }
 

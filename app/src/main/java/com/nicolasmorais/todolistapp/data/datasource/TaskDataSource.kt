@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class DataSource {
+class TaskDataSource {
     private val db = FirebaseFirestore.getInstance()
 
     private val _allTasks = MutableStateFlow<MutableList<TaskModel>>(mutableListOf())
@@ -23,8 +23,8 @@ class DataSource {
         db.collection("tasks").document(title).set(taskMap).addOnCompleteListener {
             Log.d("Salvando tarefa", "Tarefa salva com sucesso $taskMap - Result: ${it.result}")
         }.addOnFailureListener {
-                Log.d("Erro ao salvar tarefa", "Tarefa não foi salva: ${it.message}")
-            }
+            Log.d("Erro ao salvar tarefa", "Tarefa não foi salva: ${it.message}")
+        }
     }
 
     fun getTaskList(): Flow<MutableList<TaskModel>> {
@@ -54,8 +54,8 @@ class DataSource {
         db.collection("tasks").document(task).delete().addOnCompleteListener {
             Log.d("Firestore", "Tarefa deletada com sucesso")
         }.addOnFailureListener {
-                Log.e("Firestore", "Erro ao deletar tarefa: ${it.message}")
-            }
+            Log.e("Firestore", "Erro ao deletar tarefa: ${it.message}")
+        }
 
 
         db.collection("tasks").document(task).delete().addOnCompleteListener {
