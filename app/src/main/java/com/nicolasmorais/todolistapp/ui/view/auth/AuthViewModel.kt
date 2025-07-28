@@ -1,19 +1,32 @@
 package com.nicolasmorais.todolistapp.ui.view.auth
 
 import android.content.Context
+import android.util.Patterns
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.nicolasmorais.todolistapp.data.repositories.AuthRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
-    private val repository = AuthRepository()
+    private val auth = FirebaseAuth.getInstance()
+    private val repository = AuthRepository(firebaseAuth = auth)
 
     private val _userState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val userState: StateFlow<AuthUiState> = _userState
+    val isAuthenticated = repository.currentUser.map {
+        it != null
+    }
+
+    private val _currentUser = MutableStateFlow<FirebaseUser?>(auth.currentUser)
+    val currentUser: StateFlow<FirebaseUser?> = _currentUser
+
 
     var email = MutableStateFlow("")
     var password = MutableStateFlow("")
@@ -42,11 +55,13 @@ class AuthViewModel : ViewModel() {
             viewModelScope.launch {
                 _userState.value = AuthUiState.Loading
                 try {
-                    val user = repository.login(email.value, confirmPassword.value)
+                    val user = repository.login(email.value, password.value)
                     _userState.value = AuthUiState.Success(user)
                 } catch (e: Exception) {
                     _userState.value = AuthUiState.Error(e.message ?: "Erro ao fazer login")
                 }
+                delay(3000)
+                _userState.value = AuthUiState.Idle
             }
         }
     }
@@ -61,6 +76,8 @@ class AuthViewModel : ViewModel() {
                 } catch (e: Exception) {
                     _userState.value = AuthUiState.Error(e.message ?: "Erro desconhecido")
                 }
+                delay(3000)
+                _userState.value = AuthUiState.Idle
             }
         } else {
             Toast.makeText(context, registerErrorMsg(email.value), Toast.LENGTH_LONG).show()
@@ -82,7 +99,12 @@ class AuthViewModel : ViewModel() {
     }
 
     private fun isEmailValid(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && email.isNotEmpty()
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches() && email.isNotEmpty()
+    }
+
+    fun signOut() {
+        _userState.value = AuthUiState.Idle
+        repository.signOut()
     }
 
 }

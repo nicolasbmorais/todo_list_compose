@@ -1,6 +1,7 @@
 package com.nicolasmorais.todolistapp.ui.components
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +36,7 @@ fun TaskItemComponent(
     val context = LocalContext.current
 
     Card(
+        border = BorderStroke(1.dp, Color.Black),
         colors = CardColors(
             containerColor = WHITE,
             contentColor = WHITE,
@@ -134,7 +136,7 @@ fun TaskItemComponent(
 fun DeleteDialog(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,

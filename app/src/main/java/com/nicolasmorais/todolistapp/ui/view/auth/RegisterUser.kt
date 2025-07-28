@@ -7,12 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,15 +20,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.nicolasmorais.todolistapp.Destinations
+import com.nicolasmorais.todolistapp.R
 import com.nicolasmorais.todolistapp.ui.components.CustomTextFieldComponent
+import com.nicolasmorais.todolistapp.ui.components.PrimaryButtonComponent
 import com.nicolasmorais.todolistapp.ui.theme.Purple40
 import com.nicolasmorais.todolistapp.ui.theme.PurpleGrey40
+import com.nicolasmorais.todolistapp.ui.theme.WHITE
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,17 +49,32 @@ fun RegisterUser(
     val isValidPassword by viewModel.isValidPassword.collectAsState()
     val state by viewModel.userState.collectAsState()
 
+    LaunchedEffect(state) {
+        if (state is AuthUiState.Success) {
+            navController.navigate(Destinations.HOME_ROUTE) {
+                popUpTo(Destinations.LOGIN_ROUTE) { inclusive = true }
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Cadastrar usuário")
+                    Text(
+                        stringResource(R.string.cadastrar_usuario),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar"
+                            Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(
+                                R.string.voltar
+                            ),
+                            tint = WHITE,
                         )
                     }
                 },
@@ -77,7 +94,7 @@ fun RegisterUser(
                 onValueChange = {
                     viewModel.setEmail(it)
                 },
-                label = "Email", maxLines = 1, keyboardType = KeyboardType.Email,
+                label = stringResource(R.string.email), maxLines = 1, keyboardType = KeyboardType.Email,
             )
 
             CustomTextFieldComponent(
@@ -85,7 +102,7 @@ fun RegisterUser(
                 onValueChange = {
                     viewModel.setPassword(it)
                 },
-                label = "Senha",
+                label = stringResource(R.string.senha),
                 maxLines = 1, keyboardType = KeyboardType.Password,
             )
 
@@ -94,7 +111,7 @@ fun RegisterUser(
                 onValueChange = {
                     viewModel.setConfirmPassword(it)
                 },
-                label = "Confirmar senha",
+                label = stringResource(R.string.confirmar_senha),
                 maxLines = 1, keyboardType = KeyboardType.Password,
             )
             RegisterButton(
@@ -122,21 +139,11 @@ fun RegisterButton(
         }
     }
 
-    ElevatedButton(
-        onClick = onClick, colors = ButtonDefaults.elevatedButtonColors(
-            containerColor = if (isValidPassword) Purple40 else PurpleGrey40,
-        ), modifier = Modifier.fillMaxWidth(), enabled = state !is AuthUiState.Loading
-    ) {
-        when (state) {
-            is AuthUiState.Loading -> {
-                CircularProgressIndicator(
-                    color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(20.dp),
-                )
-            }
-
-            else -> {
-                Text("Cadastrar", color = Color.White)
-            }
-        }
-    }
+    PrimaryButtonComponent(
+        title = stringResource(R.string.cadastrar),
+        onClick = onClick,
+        backgroundColor = if (isValidPassword) Purple40 else PurpleGrey40,
+        isLoading = state is AuthUiState.Loading,
+        isEnabled = state !is AuthUiState.Loading,
+    )
 }

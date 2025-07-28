@@ -11,7 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -19,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,9 +37,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nicolasmorais.todolistapp.R
+import com.nicolasmorais.todolistapp.enums.Priority
 import com.nicolasmorais.todolistapp.ui.components.CustomTextFieldComponent
 import com.nicolasmorais.todolistapp.ui.components.PrimaryButtonComponent
-import com.nicolasmorais.todolistapp.enums.Priority
 import com.nicolasmorais.todolistapp.ui.theme.Purple700
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_GREEN_DISABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_GREEN_ENABLED
@@ -42,15 +48,21 @@ import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_RED_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_YELLOW_DISABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_YELLOW_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.WHITE
+import com.nicolasmorais.todolistapp.ui.view.auth.AuthViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTaskPage(navController: NavController, tasksViewModel: TasksViewModel = viewModel()) {
+fun CreateTaskPage(
+    navController: NavController,
+    tasksViewModel: TasksViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel<AuthViewModel>(),
+) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val user by authViewModel.currentUser.collectAsState()
 
     Scaffold(
         topBar = {
@@ -65,11 +77,19 @@ fun CreateTaskPage(navController: NavController, tasksViewModel: TasksViewModel 
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Purple700
-                )
-
+                ),
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar",
+                            tint = WHITE,
+                        )
+                    }
+                },
             )
         },
-    ) { innerPadding ->
+
+        ) { innerPadding ->
 
         Column(
             modifier = Modifier
@@ -84,8 +104,7 @@ fun CreateTaskPage(navController: NavController, tasksViewModel: TasksViewModel 
                 onValueChange = {
                     tasksViewModel.onTitleChanged(it)
                 },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 maxLines = 1,
                 keyboardType = KeyboardType.Text
             )
@@ -98,7 +117,8 @@ fun CreateTaskPage(navController: NavController, tasksViewModel: TasksViewModel 
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp), maxLines = 20,
+                    .height(150.dp),
+                maxLines = 20,
                 keyboardType = KeyboardType.Text
             )
 
@@ -110,8 +130,7 @@ fun CreateTaskPage(navController: NavController, tasksViewModel: TasksViewModel 
                 Text(stringResource(R.string.nivel_prioridade))
                 RadioButton(
                     selected = tasksViewModel.taskPriority == Priority.LOW,
-                    onClick =
-                    { tasksViewModel.setPriority(Priority.LOW) },
+                    onClick = { tasksViewModel.setPriority(Priority.LOW) },
                     colors = RadioButtonDefaults.colors(
                         unselectedColor = RADIO_BUTTON_GREEN_DISABLED,
                         selectedColor = RADIO_BUTTON_GREEN_ENABLED,
@@ -138,7 +157,7 @@ fun CreateTaskPage(navController: NavController, tasksViewModel: TasksViewModel 
             }
             Spacer(Modifier.height(20.dp))
             PrimaryButtonComponent(
-                text = stringResource(R.string.salvar),
+                title = stringResource(R.string.salvar),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp),
@@ -155,12 +174,13 @@ fun CreateTaskPage(navController: NavController, tasksViewModel: TasksViewModel 
                         }
 
                         withContext(Dispatchers.IO) {
-                            tasksViewModel.saveTask()
+                            user?.let { tasksViewModel.saveTask(it.uid) }
                         }
 
                         Toast.makeText(
                             context,
-                            context.getString(R.string.sucesso_ao_salvar_tarefa), Toast.LENGTH_SHORT
+                            context.getString(R.string.sucesso_ao_salvar_tarefa),
+                            Toast.LENGTH_SHORT
                         ).show()
 
                         navController.popBackStack()

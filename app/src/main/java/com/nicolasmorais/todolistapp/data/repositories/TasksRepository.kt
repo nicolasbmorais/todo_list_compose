@@ -7,12 +7,12 @@ import kotlinx.coroutines.flow.Flow
 class TasksRepository {
     private val taskDataSource = TaskDataSource()
 
-    fun saveTask(task: TaskModel) {
-        taskDataSource.saveTasks(task.title, task.description, task.priority)
+    fun saveTask(task: TaskModel, userId: String) {
+        taskDataSource.saveTasks(task.title, task.description, task.priority, userId)
     }
 
-    fun getTaskList(): Flow<MutableList<TaskModel>> {
-        return taskDataSource.getTaskList()
+    fun getTaskList(userId: String): Flow<MutableList<TaskModel>> {
+        return taskDataSource.getTaskList(userId)
     }
 
     fun deleteTask(task: String) {

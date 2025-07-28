@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nicolasmorais.todolistapp.R
-import com.nicolasmorais.todolistapp.enums.Priority
 import com.nicolasmorais.todolistapp.data.model.TaskModel
 import com.nicolasmorais.todolistapp.data.repositories.TasksRepository
+import com.nicolasmorais.todolistapp.enums.Priority
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_GREEN_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_RED_ENABLED
 import com.nicolasmorais.todolistapp.ui.theme.RADIO_BUTTON_YELLOW_ENABLED
@@ -29,10 +29,11 @@ class TasksViewModel : ViewModel() {
     val taskList = _taskList.asStateFlow()
 
 
-    init {
+
+    fun loadTasks(uid: String) {
         viewModelScope.launch {
             try {
-                _repository.getTaskList().collectLatest {
+                _repository.getTaskList(uid).collectLatest {
                     _taskList.value = it
                 }
             } catch (e: Exception) {
@@ -56,15 +57,6 @@ class TasksViewModel : ViewModel() {
     val isValid: Boolean
         get() = taskTitle.isNotBlank() && taskDescription.isNotBlank()
 
-
-    private fun fetchTasks() {
-        viewModelScope.launch {
-            _repository.getTaskList().collect {
-                _taskList.value = it
-            }
-        }
-    }
-
     fun deleteTask(taskId: String) {
         viewModelScope.launch {
             _repository.deleteTask(taskId)
@@ -86,13 +78,20 @@ class TasksViewModel : ViewModel() {
     }
 
 
-    fun saveTask() {
+    fun saveTask(uid: String) {
+        if (uid.isEmpty()) {
+            Log.e("TasksViewModel", "Usuário não autenticado - não é possível salvar tarefa")
+            return
+        }
+
         val task = TaskModel(
-            title = taskTitle, description = taskDescription, priority = taskPriority.value
+            title = taskTitle,
+            description = taskDescription,
+            priority = taskPriority.value,
         )
 
         viewModelScope.launch {
-            _repository.saveTask(task)
+            _repository.saveTask(task, uid)
         }
     }
 
@@ -114,6 +113,4 @@ class TasksViewModel : ViewModel() {
             else -> RADIO_BUTTON_RED_ENABLED
         }
     }
-
-
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TodoListApp</string>
+    <string name="app_name">Lista de Tarefas</string>
     <string name="titulo_tarefa">Titulo Tarefa</string>
     <string name="salvar_tarefa">Salvar Tarefa</string>
     <string name="lista_de_tarefas">Lista de Tarefas</string>
@@ -13,4 +13,13 @@
     <string name="prioridade_media">Prioridade Média</string>
     <string name="prioridade_alta">Prioridade Alta</string>
     <string name="sucesso_ao_deletar_tarefa">Sucesso ao deletar tarefa!</string>
+    <string name="cadastrar_usuario">Cadastrar usuário</string>
+    <string name="voltar">Voltar</string>
+    <string name="email">Email</string>
+    <string name="senha">Senha</string>
+    <string name="confirmar_senha">Confirmar senha</string>
+    <string name="cadastrar">Cadastrar</string>
+    <string name="entrar">Entrar</string>
+    <string name="sair_do_aplicativo">Sair do aplicativo</string>
+    <string name="usuario_nao_encontrado">Usuário não encontrado</string>
 </resources>
